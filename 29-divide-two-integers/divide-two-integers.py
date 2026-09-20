@@ -1,31 +1,27 @@
 class Solution:
     def divide(self, dividend: int, divisor: int) -> int:
-        if dividend == divisor:
-            return 1
-
-        
-        is_positive = (dividend < 0) == (divisor < 0)
-
-        
-        a = abs(dividend)
-        b = abs(divisor)
-        ans = 0
-
-        
-        while a >= b:
-            q = 0
-            
-            
-            while a > (b << (q + 1)):
-                q += 1
-            
-            
-            ans += (1 << q)
-            a -= (b << q)
-
-        
-        if ans == (1 << 31) and is_positive:
+        # prevent overflow
+        if dividend == -2**31 and divisor == -1:
             return 2**31 - 1
 
+        sign = 0
+        if dividend < 0:
+            sign += 1
+            dividend = abs(dividend)
+        if divisor < 0:
+            sign += 1
+            divisor = abs(divisor)
         
-        return ans if is_positive else -ans     
+        res = 0
+        while dividend >= divisor:
+            value = divisor
+            multiple = 1
+
+            while dividend >= value + value:
+                value += value
+                multiple += multiple
+            
+            dividend -= value
+            res += multiple
+        
+        return -res if sign == 1 else res
